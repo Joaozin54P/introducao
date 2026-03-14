@@ -1,52 +1,41 @@
 package io.github.fatec.introducao.controller;
 
-import io.github.fatec.introducao.DTO.*;
+import io.github.fatec.introducao.DTO.PessoaRequestPost;
+import io.github.fatec.introducao.DTO.PessoaRequestPut;
+import io.github.fatec.introducao.model.Pessoa;
+import io.github.fatec.introducao.service.PessoaService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/pessoas")
 public class PessoaController {
 
-    private Map<String, String> banco = new HashMap<>();
+    private final PessoaService service;
 
-    // GET - listar todas
+    public PessoaController(PessoaService service) {
+        this.service = service;
+    }
+
     @GetMapping
-    public Map<String, String> listar() {
-        return banco;
+    public List<Pessoa> listar() {
+        return service.listar();
     }
 
-    // GET por id
-    @GetMapping("/{id}")
-    public String buscar(@PathVariable String id) {
-        return banco.get(id);
-    }
-
-    // POST - adicionar
     @PostMapping
-    public String criar(@RequestBody PessoaRequestPost request) {
-
-        String id = UUID.randomUUID().toString();
-        banco.put(id, request.getNome());
-
-        return "Pessoa criada com id: " + id;
+    public Pessoa criar(@RequestBody PessoaRequestPost request) {
+        return service.criar(request);
     }
 
-    // PUT - atualizar
     @PutMapping("/{id}")
-    public String atualizar(@PathVariable String id,
+    public Pessoa atualizar(@PathVariable String id,
                             @RequestBody PessoaRequestPut request) {
-
-        banco.put(id, request.getNome());
-        return "Pessoa atualizada com sucesso";
+        return service.atualizar(id, request);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public String deletar(@PathVariable String id) {
-
-        banco.remove(id);
-        return "Pessoa deletada com sucesso";
+        return service.deletar(id);
     }
 }
